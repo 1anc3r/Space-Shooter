@@ -10,6 +10,13 @@ public class PlayerController : MonoBehaviour {
 	private float moveVertical;
 	private Vector3 moveVector;
 
+	private float fireNext;
+	private float fireInterval = 0.2f;
+	public GameObject bullet;
+	public Transform leftLauncher;
+	public Transform centerLauncher;
+	public Transform rightLauncher;
+
 	// Use this for initialization
 	void Start () {
 
@@ -17,7 +24,12 @@ public class PlayerController : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-
+		if (Time.time > fireNext) {
+			fireNext = Time.time + fireInterval;
+			Instantiate (bullet, leftLauncher.position, leftLauncher.rotation);
+			Instantiate (bullet, centerLauncher.position, centerLauncher.rotation);
+			Instantiate (bullet, rightLauncher.position, rightLauncher.rotation);
+		}
 	}
 
 	void FixedUpdate () {
