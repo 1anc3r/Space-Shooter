@@ -4,18 +4,21 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
 
-	public float speed = 5;
-	public float tilt = 5;
-	private float moveHorizontal;
-	private float moveVertical;
-	private Vector3 moveVector;
+	public GameObject expolsion;
 
-	private float fireNext;
-	private float fireInterval = 0.2f;
 	public GameObject bullet;
 	public Transform leftLauncher;
 	public Transform centerLauncher;
 	public Transform rightLauncher;
+
+	private bool flag = false;
+	private float fireNext = 0f;
+	private float fireInterval = 0.5f;
+	private float speed = 5;
+	private float tilt = 5;
+	private float moveHorizontal;
+	private float moveVertical;
+	private Vector3 moveVector;
 
 	// Use this for initialization
 	void Start () {
@@ -24,26 +27,45 @@ public class PlayerController : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		if (Time.time > fireNext) {
+#if UNITY_EDITOR || UNITY_STANDALONE
+		if (Input.GetButton ("Jump")) {
+			flag = true;
+		}
+#elif UNITY_IPHONE || UNITY_ANDROID
+		if (Input.touchCount == 1) {
+			flag = true;
+		}
+#endif
+		if (flag && Time.time > fireNext) {
 			fireNext = Time.time + fireInterval;
 			Instantiate (bullet, leftLauncher.position, leftLauncher.rotation);
 			Instantiate (bullet, centerLauncher.position, centerLauncher.rotation);
 			Instantiate (bullet, rightLauncher.position, rightLauncher.rotation);
+			GetComponent<AudioSource>().Play();
+			flag = false;
 		}
 	}
 
 	void FixedUpdate () {
-
 #if UNITY_EDITOR || UNITY_STANDALONE
 		moveHorizontal = Input.GetAxis ("Horizontal");
 		moveVertical = Input.GetAxis ("Vertical");
 #elif UNITY_IPHONE || UNITY_ANDROID
-		moveHorizontal = Input.GetAxis ("Mouse X");
-		moveVertical = Input.GetAxis ("Mouse Y");
+		if (Input.touchCount == 1) {
+
+        }
 #endif
 		moveVector = new Vector3 (moveHorizontal, moveVertical, 0f);
 		GetComponent<Rigidbody> ().velocity = moveVector * speed;
 		GetComponent<Rigidbody> ().rotation = Quaternion.Euler (-90f, GetComponent<Rigidbody> ().velocity.x * -tilt, 0f);
 		GetComponent<Rigidbody> ().position = new Vector3 (Mathf.Clamp (GetComponent<Rigidbody> ().position.x, -2.13f, 2.13f), Mathf.Clamp (GetComponent<Rigidbody> ().position.y, -4.45f, 4.45f), 0f);
+	}
+
+	void OnTriggerEnter (Collider other) {
+		if (other.tag == "Asteroid") {
+			Instantiate (expolsion, transform.position, transform.rotation);
+			Destroy (other.gameObject);
+			Destroy (gameObject);
+		}
 	}
 }
