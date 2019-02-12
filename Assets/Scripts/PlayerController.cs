@@ -11,9 +11,8 @@ public class PlayerController : MonoBehaviour {
 	public Transform centerLauncher;
 	public Transform rightLauncher;
 
-	private bool flag = false;
 	private float fireNext = 0f;
-	private float fireInterval = 0.5f;
+	private float fireInterval = 0.25f;
 	private float speed = 5;
 	private float tilt = 5;
 	private float moveHorizontal;
@@ -27,22 +26,12 @@ public class PlayerController : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-#if UNITY_EDITOR || UNITY_STANDALONE
-		if (Input.GetButton ("Jump")) {
-			flag = true;
-		}
-#elif UNITY_IPHONE || UNITY_ANDROID
-		if (Input.touchCount == 1) {
-			flag = true;
-		}
-#endif
-		if (flag && Time.time > fireNext) {
+		if (Time.time > fireNext) {
 			fireNext = Time.time + fireInterval;
-			Instantiate (bullet, leftLauncher.position, leftLauncher.rotation);
+			// Instantiate (bullet, leftLauncher.position, leftLauncher.rotation);
 			Instantiate (bullet, centerLauncher.position, centerLauncher.rotation);
-			Instantiate (bullet, rightLauncher.position, rightLauncher.rotation);
+			// Instantiate (bullet, rightLauncher.position, rightLauncher.rotation);
 			GetComponent<AudioSource>().Play();
-			flag = false;
 		}
 	}
 
@@ -62,9 +51,8 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	void OnTriggerEnter (Collider other) {
-		if (other.tag == "Asteroid") {
+		if (other.tag == "Asteroid" || other.tag == "Enemy") {
 			Instantiate (expolsion, transform.position, transform.rotation);
-			Destroy (other.gameObject);
 			Destroy (gameObject);
 		}
 	}

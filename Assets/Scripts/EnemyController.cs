@@ -2,30 +2,31 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AsteroidController : MonoBehaviour {
+public class EnemyController : MonoBehaviour {
 
-	public int type = 0;
 	public GameObject expolsion;
 
-	private float speed = -5f;
-	private float tumble = 5f;
+	private Vector3 velocity = Vector3.zero;
+	private Vector3 direct;
+	private Vector3 target;
+	private float speed = 1f;
+	private int life = 3;
 
 	// Use this for initialization
 	void Start () {
-		GetComponent<Rigidbody> ().velocity = transform.up * speed;
-		GetComponent<Rigidbody> ().angularVelocity = Random.insideUnitSphere * tumble;
+		GetComponent<Rigidbody> ().velocity = transform.forward * speed;
 	}
 
 	// Update is called once per frame
 	void Update () {
-		if (transform.position.y < -5.5f) {
-			Destroy (gameObject);
+		if (GameObject.Find ("StarSparrow1(Clone)")) {
+			transform.position = Vector3.MoveTowards (transform.position, GameObject.Find ("StarSparrow1(Clone)").transform.position, Time.deltaTime * 0.5f);
 		}
 	}
 
 	void OnTriggerEnter (Collider other) {
 		if (other.tag == "Player" || other.tag == "Fire") {
-			if (type - 1 == 0) {
+			if (life - 1 == 0) {
 				Instantiate (expolsion, transform.position, transform.rotation);
 				Destroy (gameObject);
 			}
@@ -35,7 +36,7 @@ public class AsteroidController : MonoBehaviour {
 			if (other.tag == "Fire") {
 				GameObject.Find ("Main Camera").GetComponent<GameController> ().AddScore (1);
 				Destroy (other.gameObject);
-				type--;
+				life--;
 			}
 		}
 	}
