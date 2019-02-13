@@ -5,10 +5,14 @@ using UnityEngine;
 public class EnemyController : MonoBehaviour
 {
 
+    public int life = 3;
+    public float speed = -1f;
     public GameObject expolsion;
+    public GameObject bullet;
+    public Transform centerLauncher;
 
-    private float speed = -1f;
-    private int life = 3;
+    private float fireNext = 0f;
+    private float fireInterval = 1f;
 
     // Use this for initialization
     void Start()
@@ -19,10 +23,20 @@ public class EnemyController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (GameObject.Find("StarSparrow1(Clone)"))
+        if (GameObject.FindWithTag("Player"))
         {
-			transform.LookAt(GameObject.Find("StarSparrow1(Clone)").transform.position);
-			transform.position = Vector3.MoveTowards(transform.position, GameObject.Find("StarSparrow1(Clone)").transform.position, Time.deltaTime * 0.5f);
+			transform.LookAt(GameObject.FindWithTag("Player").transform.position);
+			transform.position = Vector3.MoveTowards(transform.position, GameObject.Find("Player").transform.position, Time.deltaTime * 0.5f);
+        	if (Time.time > fireNext)
+        	{
+        	    fireNext = Time.time + fireInterval;
+       	     	Instantiate(bullet, centerLauncher.position, centerLauncher.rotation);
+            	GetComponent<AudioSource>().Play();
+        	}
+        }
+        if (transform.position.z < -5.5f)
+        {
+            Destroy(gameObject);
         }
     }
 
@@ -34,10 +48,6 @@ public class EnemyController : MonoBehaviour
             {
                 Instantiate(expolsion, transform.position, transform.rotation);
                 Destroy(gameObject);
-            }
-            if (other.tag == "Player")
-            {
-                GameObject.Find("Main Camera").GetComponent<GameController>().GameOver();
             }
             if (other.tag == "Fire")
             {

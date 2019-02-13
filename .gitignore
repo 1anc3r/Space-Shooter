@@ -1,6 +1,5 @@
 *.sln
 .vscode/
-Assets/
 Library/
 Temp/
 .vs/

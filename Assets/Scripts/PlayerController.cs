@@ -5,16 +5,17 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
 
+    public int type = 1;
+    public float speed = 5;
     public GameObject expolsion;
     public GameObject bullet;
     public Transform leftLauncher;
     public Transform centerLauncher;
     public Transform rightLauncher;
 
+    private float tilt = 5;
     private float fireNext = 0f;
     private float fireInterval = 0.25f;
-    private float speed = 5;
-    private float tilt = 5;
     private float moveHorizontal;
     private float moveVertical;
     private Vector3 moveVector;
@@ -51,7 +52,7 @@ public class PlayerController : MonoBehaviour
         if (Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Moved)
         {
             Vector3 position = GameObject.Find("Main Camera").GetComponent<Camera>().ScreenToWorldPoint(Input.GetTouch(0).position);
-            GetComponent<Rigidbody>().rotation = Quaternion.Euler(0f, 0f, Input.GetTouch(0).deltaPosition.x * -tilt);
+            GetComponent<Rigidbody>().rotation = Quaternion.Euler(0f, 0f, Mathf.Clamp(Input.GetTouch(0).deltaPosition.x, -5f, 5f) * -tilt);
             GetComponent<Rigidbody>().position = new Vector3(Mathf.Clamp(position.x, -2.13f, 2.13f), 0f, Mathf.Clamp(position.z, -4.45f, 4.45f));
         }
 #endif
@@ -59,10 +60,11 @@ public class PlayerController : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Asteroid" || other.tag == "Enemy")
+        if (other.tag == "Asteroid" || other.tag == "Enemy" || other.tag == "Fire")
         {
             Instantiate(expolsion, transform.position, transform.rotation);
             Destroy(gameObject);
+            GameObject.Find("Main Camera").GetComponent<GameController>().GameOver();
         }
     }
 }

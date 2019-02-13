@@ -5,7 +5,7 @@ using UnityEngine;
 public class BulletController : MonoBehaviour
 {
 
-    private float speed = 5f;
+    public float speed = 5f;
 
     // Use this for initialization
     void Start()
@@ -17,6 +17,14 @@ public class BulletController : MonoBehaviour
     void Update()
     {
         if (transform.position.y > 5.5f)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Player" || other.tag == "Asteroid" || other.tag == "Enemy")
         {
             Destroy(gameObject);
         }

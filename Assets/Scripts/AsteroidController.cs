@@ -5,10 +5,10 @@ using UnityEngine;
 public class AsteroidController : MonoBehaviour
 {
 
-    public int type = 0;
+    public int life = 0;
+    public float speed = -5f;
     public GameObject expolsion;
 
-    private float speed = -5f;
     private float tumble = 5f;
 
     // Use this for initialization
@@ -21,7 +21,7 @@ public class AsteroidController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (transform.position.x < -5.5f)
+        if (transform.position.z < -5.5f)
         {
             Destroy(gameObject);
         }
@@ -31,20 +31,16 @@ public class AsteroidController : MonoBehaviour
     {
         if (other.tag == "Player" || other.tag == "Fire")
         {
-            if (type - 1 == 0)
+            if (life - 1 == 0)
             {
                 Instantiate(expolsion, transform.position, transform.rotation);
                 Destroy(gameObject);
-            }
-            if (other.tag == "Player")
-            {
-                GameObject.Find("Main Camera").GetComponent<GameController>().GameOver();
             }
             if (other.tag == "Fire")
             {
                 GameObject.Find("Main Camera").GetComponent<GameController>().AddScore(1);
                 Destroy(other.gameObject);
-                type--;
+                life--;
             }
         }
     }
