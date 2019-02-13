@@ -34,7 +34,8 @@ public class GameController : MonoBehaviour
             background = GameObject.Find("Background Image").GetComponent<RawImage>();
             fitter = GameObject.Find("Background Image").GetComponent<AspectRatioFitter>();
         }
-        SetBackgroundByUrl(Path.Combine(Application.streamingAssetsPath, "Background1.jpg"));
+        string fileName = "Background" + (int)UnityEngine.Random.Range(1, 4) + ".jpg";
+        SetBackgroundByUrl(Path.Combine(Application.streamingAssetsPath, fileName));
         GameObject.Find("Play Button").GetComponent<Button>().onClick.AddListener(OnGamePlayClick);
         GameObject.Find("Exit Button").GetComponent<Button>().onClick.AddListener(OnGameExitClick);
     }
