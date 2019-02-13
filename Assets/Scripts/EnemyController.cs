@@ -26,7 +26,7 @@ public class EnemyController : MonoBehaviour
         if (GameObject.FindWithTag("Player"))
         {
 			transform.LookAt(GameObject.FindWithTag("Player").transform.position);
-			transform.position = Vector3.MoveTowards(transform.position, GameObject.Find("Player").transform.position, Time.deltaTime * 0.5f);
+			transform.position = Vector3.MoveTowards(transform.position, GameObject.FindWithTag("Player").transform.position, Time.deltaTime * 0.5f);
         	if (Time.time > fireNext)
         	{
         	    fireNext = Time.time + fireInterval;

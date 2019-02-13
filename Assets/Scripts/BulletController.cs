@@ -16,15 +16,7 @@ public class BulletController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (transform.position.y > 5.5f)
-        {
-            Destroy(gameObject);
-        }
-    }
-
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.tag == "Player" || other.tag == "Asteroid" || other.tag == "Enemy")
+        if (transform.position.z > 5.5f)
         {
             Destroy(gameObject);
         }

@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
 
     public int type = 1;
     public float speed = 5;
+    public bool isUpgrade = false;
     public GameObject expolsion;
     public GameObject bullet;
     public Transform leftLauncher;
@@ -32,9 +33,11 @@ public class PlayerController : MonoBehaviour
         if (Time.time > fireNext)
         {
             fireNext = Time.time + fireInterval;
-            // Instantiate (bullet, leftLauncher.position, leftLauncher.rotation);
+            if (isUpgrade) {
+                Instantiate (bullet, leftLauncher.position, leftLauncher.rotation);
+                Instantiate (bullet, rightLauncher.position, rightLauncher.rotation);
+            }
             Instantiate(bullet, centerLauncher.position, centerLauncher.rotation);
-            // Instantiate (bullet, rightLauncher.position, rightLauncher.rotation);
             GetComponent<AudioSource>().Play();
         }
     }
@@ -62,9 +65,15 @@ public class PlayerController : MonoBehaviour
     {
         if (other.tag == "Asteroid" || other.tag == "Enemy" || other.tag == "Fire")
         {
-            Instantiate(expolsion, transform.position, transform.rotation);
-            Destroy(gameObject);
-            GameObject.Find("Main Camera").GetComponent<GameController>().GameOver();
+            if (other.name != "Bullet1(Clone)") {
+                Instantiate(expolsion, transform.position, transform.rotation);
+                Destroy(gameObject);
+                if (other.tag == "Fire")
+                {
+                    Destroy(other.gameObject);
+                }
+                GameObject.Find("Main Camera").GetComponent<GameController>().GameOver();
+            }
         }
     }
 }
