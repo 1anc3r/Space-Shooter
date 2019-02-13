@@ -14,14 +14,14 @@ public class AsteroidController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        GetComponent<Rigidbody>().velocity = transform.up * speed;
+        GetComponent<Rigidbody>().velocity = transform.forward * speed;
         GetComponent<Rigidbody>().angularVelocity = Random.insideUnitSphere * tumble;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (transform.position.y < -5.5f)
+        if (transform.position.x < -5.5f)
         {
             Destroy(gameObject);
         }

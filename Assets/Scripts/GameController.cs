@@ -80,7 +80,7 @@ public class GameController : MonoBehaviour
 
     public void GamePlay()
     {
-        Instantiate(player, new Vector3(0f, -4f, 0f), Quaternion.Euler(-90f, 0f, 0f));
+        Instantiate(player, new Vector3(0f, 0f, -4f), Quaternion.Euler(0f, 0f, 0f));
         playText.SetActive(false);
         exitText.SetActive(false);
         StartCoroutine("SpawnWaves");
@@ -116,7 +116,7 @@ public class GameController : MonoBehaviour
                 if (range > 3f)
                 {
                     asteroid = enemy;
-                    Instantiate(enemy, new Vector3(UnityEngine.Random.Range(-2.3f, 2.3f), 5.5f, 0f), Quaternion.Euler(90f, -90f, 90f));
+                    Instantiate(enemy, new Vector3(UnityEngine.Random.Range(-2.3f, 2.3f), 0f, 5.5f), Quaternion.identity);
                 } else {
                     if (range > 0 && range <= 1f)
                     {
@@ -130,7 +130,7 @@ public class GameController : MonoBehaviour
                     {
                         asteroid = asteroid3;
                     }
-                    Instantiate(asteroid, new Vector3(UnityEngine.Random.Range(-2.3f, 2.3f), 5.5f, 0f), Quaternion.identity);
+                    Instantiate(asteroid, new Vector3(UnityEngine.Random.Range(-2.3f, 2.3f), 0f, 5.5f), Quaternion.identity);
                 }
                 yield return new WaitForSeconds(1);
             }

@@ -43,16 +43,16 @@ public class PlayerController : MonoBehaviour
 #if UNITY_EDITOR || UNITY_STANDALONE
         moveHorizontal = Input.GetAxis("Horizontal");
         moveVertical = Input.GetAxis("Vertical");
-        moveVector = new Vector3(moveHorizontal, moveVertical, 0f);
+        moveVector = new Vector3(moveHorizontal, 0f, moveVertical);
         GetComponent<Rigidbody>().velocity = moveVector * speed;
-        GetComponent<Rigidbody>().rotation = Quaternion.Euler(-90f, GetComponent<Rigidbody>().velocity.x * -tilt, 0f);
-        GetComponent<Rigidbody>().position = new Vector3(Mathf.Clamp(GetComponent<Rigidbody>().position.x, -2.13f, 2.13f), Mathf.Clamp(GetComponent<Rigidbody>().position.y, -4.45f, 4.45f), 0f);
+        GetComponent<Rigidbody>().rotation = Quaternion.Euler(0f, 0f, GetComponent<Rigidbody>().velocity.x * -tilt);
+        GetComponent<Rigidbody>().position = new Vector3(Mathf.Clamp(GetComponent<Rigidbody>().position.x, -2.13f, 2.13f), 0f, Mathf.Clamp(GetComponent<Rigidbody>().position.z, -4.45f, 4.45f));
 #elif UNITY_IPHONE || UNITY_ANDROID
         if (Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Moved)
         {
             Vector3 position = GameObject.Find("Main Camera").GetComponent<Camera>().ScreenToWorldPoint(Input.GetTouch(0).position);
-            GetComponent<Rigidbody>().rotation = Quaternion.Euler(-90f, Input.GetTouch(0).deltaPosition.normalized.x * -tilt, 0f);
-            GetComponent<Rigidbody>().position = new Vector3(Mathf.Clamp(position.x, -2.13f, 2.13f), Mathf.Clamp(position.y, -4.45f, 4.45f), 0f);
+            GetComponent<Rigidbody>().rotation = Quaternion.Euler(0f, 0f, Input.GetTouch(0).deltaPosition.x * -tilt);
+            GetComponent<Rigidbody>().position = new Vector3(Mathf.Clamp(position.x, -2.13f, 2.13f), 0f, Mathf.Clamp(position.z, -4.45f, 4.45f));
         }
 #endif
     }

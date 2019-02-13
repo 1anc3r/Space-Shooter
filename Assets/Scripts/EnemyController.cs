@@ -7,7 +7,7 @@ public class EnemyController : MonoBehaviour
 
     public GameObject expolsion;
 
-    private float speed = 1f;
+    private float speed = -1f;
     private int life = 3;
 
     // Use this for initialization
@@ -21,6 +21,8 @@ public class EnemyController : MonoBehaviour
     {
         if (GameObject.Find("StarSparrow1(Clone)"))
         {
+			transform.LookAt(GameObject.Find("StarSparrow1(Clone)").transform.position);
+			transform.position = Vector3.MoveTowards(transform.position, GameObject.Find("StarSparrow1(Clone)").transform.position, Time.deltaTime * 0.5f);
         }
     }
 
