@@ -50,17 +50,9 @@ public class PlayerController : MonoBehaviour
 #elif UNITY_IPHONE || UNITY_ANDROID
         if (Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Moved)
         {
-            try
-            {
-                Vector3 position = GameObject.Find("Main Camera").GetComponent<Camera>().ScreenToWorldPoint(Input.GetTouch(0).position);
-                GetComponent<Rigidbody>().rotation = Quaternion.Euler(-90f, Input.GetTouch(0).deltaPosition.normalized.x * -tilt, 0f);
-                GetComponent<Rigidbody>().position = new Vector3(Mathf.Clamp(position.x, -2.13f, 2.13f), Mathf.Clamp(position.y, -4.45f, 4.45f), 0f);
-            }
-            catch(System.Exception e)
-            {
-                Debug.Log("Error: " + e.Message);
-            }
-
+            Vector3 position = GameObject.Find("Main Camera").GetComponent<Camera>().ScreenToWorldPoint(Input.GetTouch(0).position);
+            GetComponent<Rigidbody>().rotation = Quaternion.Euler(-90f, Input.GetTouch(0).deltaPosition.normalized.x * -tilt, 0f);
+            GetComponent<Rigidbody>().position = new Vector3(Mathf.Clamp(position.x, -2.13f, 2.13f), Mathf.Clamp(position.y, -4.45f, 4.45f), 0f);
         }
 #endif
     }

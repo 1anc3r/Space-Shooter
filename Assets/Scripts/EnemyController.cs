@@ -21,7 +21,6 @@ public class EnemyController : MonoBehaviour
     {
         if (GameObject.Find("StarSparrow1(Clone)"))
         {
-            transform.position = Vector3.MoveTowards(transform.position, GameObject.Find("StarSparrow1(Clone)").transform.position, Time.deltaTime * 0.5f);
         }
     }
 
