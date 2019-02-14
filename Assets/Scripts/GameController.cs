@@ -22,7 +22,6 @@ public class GameController : MonoBehaviour
     
     private RawImage background;
     private GameObject showPlayer;
-    private GameObject firePlayer;
     private Texture2D texture;
     private AspectRatioFitter fitter;
     private int score;
@@ -107,6 +106,7 @@ public class GameController : MonoBehaviour
     }
 
     private void unloadedEve (Scene scene) {
+        GamePlay();
         SceneManager.sceneUnloaded -= unloadedEve;
     }
 
@@ -144,17 +144,18 @@ public class GameController : MonoBehaviour
             isLoadGallery = false;
             unloadGalleryScene ();
         }
-        GamePlay();
     }
 
     public void GamePlay()
     {
-        Destroy(showPlayer);
+        if(showPlayer) {
+            Destroy(showPlayer);
+        }
         scoreText.SetActive(true);
         playText.SetActive(false);
         exitText.SetActive(false);
         chooseText.SetActive(false);
-        firePlayer = Instantiate(player, new Vector3(0f, 0f, -4f), Quaternion.identity);
+        Instantiate(player, new Vector3(0f, 0f, -4f), Quaternion.identity);
         StartCoroutine("SpawnWaves");
     }
 
@@ -197,9 +198,6 @@ public class GameController : MonoBehaviour
     {
         this.score += score;
         scoreText.GetComponent<TextMeshProUGUI>().text = "Score:" + this.score;
-        // if(this.score % 10 == 0) {
-        //     firePlayer.GetComponent<PlayerController>().Upgrade();
-        // }
     }
 
     private IEnumerator SpawnWaves()
