@@ -21,9 +21,11 @@ public class GameController : MonoBehaviour
     public GameObject playText;
     public GameObject exitText;
     public GameObject beginText;
+    public GameObject showPlayer;
     private Texture2D texture;
     private AspectRatioFitter fitter;
     private int score;
+    private bool isLoad = false;
 
     // Use this for initialization
     void Start()
@@ -42,7 +44,10 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        if(showPlayer)
+        {
+            showPlayer.transform.Rotate(Vector3.forward, 1, Space.World);
+        }
     }
 
     public void SetBackgroundByUrl(string path)
@@ -68,37 +73,48 @@ public class GameController : MonoBehaviour
         }
     }
 
-    public void loadGalleryScene () {
+    private void loadGalleryScene () {
+        SceneManager.sceneLoaded += loadedEve;
         Resources.UnloadUnusedAssets ();
         StartCoroutine (loadSceneAsync (1, 1));
     }
 
-    public void unloadGalleryScene () {
+    private void unloadGalleryScene () {
+        SceneManager.sceneUnloaded += unloadedEve;
         Resources.UnloadUnusedAssets ();
         StartCoroutine (unloadSceneAsync (1));
     }
 
-    public IEnumerator loadSceneAsync (int sceneIndex, int mode = 0) {
+    private IEnumerator loadSceneAsync (int sceneIndex, int mode = 0) {
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync (sceneIndex, mode == 0 ? LoadSceneMode.Single : LoadSceneMode.Additive);
         while (!asyncLoad.isDone) {
             yield return null;
         }
     }
 
-    public IEnumerator unloadSceneAsync (int sceneIndex) {
+    private IEnumerator unloadSceneAsync (int sceneIndex) {
         AsyncOperation asyncLoad = SceneManager.UnloadSceneAsync (sceneIndex);
         while (!asyncLoad.isDone) {
             yield return null;
         }
     }
 
+    private void loadedEve (Scene scene, LoadSceneMode level) {
+        ShowPlayer();
+        SceneManager.sceneLoaded -= loadedEve;
+    }
+
+    private void unloadedEve (Scene scene) {
+        SceneManager.sceneUnloaded -= unloadedEve;
+    }
+
     private void OnGamePlayClick()
     {
-        scoreText.SetActive(false);
-        playText.SetActive(false);
-        exitText.SetActive(false);
-        beginText.SetActive(true);
-        loadGalleryScene();
+        if (!isLoad)
+        {
+            isLoad = true;
+            loadGalleryScene();
+        }
     }
 
     private void OnGameExitClick()
@@ -108,17 +124,22 @@ public class GameController : MonoBehaviour
 
     private void OnBeginClick()
     {
-        unloadGalleryScene ();
+        if (isLoad)
+        {
+            isLoad = false;
+            unloadGalleryScene ();
+        }
         GamePlay();
     }
 
     public void GamePlay()
     {
+        Destroy(showPlayer);
         scoreText.SetActive(true);
         playText.SetActive(false);
         exitText.SetActive(false);
         beginText.SetActive(false);
-        Instantiate(player, new Vector3(0f, 0f, -4f), Quaternion.Euler(0f, 0f, 0f));
+        Instantiate(player, new Vector3(0f, 0f, -4f), Quaternion.identity);
         StartCoroutine("SpawnWaves");
     }
 
@@ -139,6 +160,22 @@ public class GameController : MonoBehaviour
     public void SetPlayer(GameObject player)
     {
         this.player = player;
+        ShowPlayer();
+    }
+
+    public void ShowPlayer ()
+    {
+        scoreText.SetActive(false);
+        playText.SetActive(false);
+        exitText.SetActive(false);
+        beginText.SetActive(true);
+        if(showPlayer) {
+            Destroy(showPlayer);
+        }
+        showPlayer = Instantiate(player, new Vector3(0f, 0f, 0f), Quaternion.Euler(-45, 180, 0));
+        Destroy(showPlayer.GetComponent<PlayerController>());
+        Destroy(GameObject.Find("engines_player"));
+        showPlayer.transform.localScale = 0.25f * Vector3.one;
     }
 
     public void AddScore(int score)
