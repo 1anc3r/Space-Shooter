@@ -16,7 +16,7 @@ public class BulletController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (transform.position.z > 5.5f)
+        if (transform.position.z < -5.5f || transform.position.z > 5.5f)
         {
             Destroy(gameObject);
         }

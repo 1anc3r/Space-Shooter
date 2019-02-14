@@ -1,12 +1,11 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
+using System.Collections;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.Networking;
 using UnityEngine.UI;
+using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
@@ -16,12 +15,12 @@ public class GameController : MonoBehaviour
     public GameObject asteroid1;
     public GameObject asteroid2;
     public GameObject asteroid3;
+    
+    private RawImage background;
     public GameObject scoreText;
     public GameObject playText;
     public GameObject exitText;
-
-    public GameObject temp;
-    private RawImage background;
+    public GameObject beginText;
     private Texture2D texture;
     private AspectRatioFitter fitter;
     private int score;
@@ -33,11 +32,11 @@ public class GameController : MonoBehaviour
         {
             background = GameObject.Find("Background Image").GetComponent<RawImage>();
             fitter = GameObject.Find("Background Image").GetComponent<AspectRatioFitter>();
+            SetBackgroundByUrl(Path.Combine(Application.streamingAssetsPath, "Background" + (int)UnityEngine.Random.Range(1, 4) + ".jpg"));
         }
-        string fileName = "Background" + (int)UnityEngine.Random.Range(1, 4) + ".jpg";
-        SetBackgroundByUrl(Path.Combine(Application.streamingAssetsPath, fileName));
         GameObject.Find("Play Button").GetComponent<Button>().onClick.AddListener(OnGamePlayClick);
         GameObject.Find("Exit Button").GetComponent<Button>().onClick.AddListener(OnGameExitClick);
+        GameObject.Find("Begin Button").GetComponent<Button>().onClick.AddListener(OnBeginClick);
     }
 
     // Update is called once per frame
@@ -69,9 +68,37 @@ public class GameController : MonoBehaviour
         }
     }
 
+    public void loadGalleryScene () {
+        Resources.UnloadUnusedAssets ();
+        StartCoroutine (loadSceneAsync (1, 1));
+    }
+
+    public void unloadGalleryScene () {
+        Resources.UnloadUnusedAssets ();
+        StartCoroutine (unloadSceneAsync (1));
+    }
+
+    public IEnumerator loadSceneAsync (int sceneIndex, int mode = 0) {
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync (sceneIndex, mode == 0 ? LoadSceneMode.Single : LoadSceneMode.Additive);
+        while (!asyncLoad.isDone) {
+            yield return null;
+        }
+    }
+
+    public IEnumerator unloadSceneAsync (int sceneIndex) {
+        AsyncOperation asyncLoad = SceneManager.UnloadSceneAsync (sceneIndex);
+        while (!asyncLoad.isDone) {
+            yield return null;
+        }
+    }
+
     private void OnGamePlayClick()
     {
-        GamePlay();
+        scoreText.SetActive(false);
+        playText.SetActive(false);
+        exitText.SetActive(false);
+        beginText.SetActive(true);
+        loadGalleryScene();
     }
 
     private void OnGameExitClick()
@@ -79,24 +106,39 @@ public class GameController : MonoBehaviour
         GameExit();
     }
 
+    private void OnBeginClick()
+    {
+        unloadGalleryScene ();
+        GamePlay();
+    }
+
     public void GamePlay()
     {
-        Instantiate(player, new Vector3(0f, 0f, -4f), Quaternion.Euler(0f, 0f, 0f));
+        scoreText.SetActive(true);
         playText.SetActive(false);
         exitText.SetActive(false);
+        beginText.SetActive(false);
+        Instantiate(player, new Vector3(0f, 0f, -4f), Quaternion.Euler(0f, 0f, 0f));
         StartCoroutine("SpawnWaves");
     }
 
     public void GameOver()
     {
+        scoreText.SetActive(false);
         playText.SetActive(true);
         exitText.SetActive(true);
+        beginText.SetActive(false);
         StopCoroutine("SpawnWaves");
     }
 
     public void GameExit()
     {
         Application.Quit();
+    }
+
+    public void SetPlayer(GameObject player)
+    {
+        this.player = player;
     }
 
     public void AddScore(int score)
