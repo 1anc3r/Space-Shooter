@@ -76,4 +76,14 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
+
+    public void Upgrade()
+    {
+        isUpgrade = true;
+    }
+
+    public void Downgrade()
+    {
+        isUpgrade = false;
+    }
 }

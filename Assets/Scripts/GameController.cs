@@ -15,17 +15,19 @@ public class GameController : MonoBehaviour
     public GameObject asteroid1;
     public GameObject asteroid2;
     public GameObject asteroid3;
-    
-    private RawImage background;
     public GameObject scoreText;
     public GameObject playText;
     public GameObject exitText;
-    public GameObject beginText;
-    public GameObject showPlayer;
+    public GameObject chooseText;
+    
+    private RawImage background;
+    private GameObject showPlayer;
+    private GameObject firePlayer;
     private Texture2D texture;
     private AspectRatioFitter fitter;
     private int score;
-    private bool isLoad = false;
+    private bool isLoadGallery = false;
+    private readonly float rotateFactory = 100f;
 
     // Use this for initialization
     void Start()
@@ -38,7 +40,7 @@ public class GameController : MonoBehaviour
         }
         GameObject.Find("Play Button").GetComponent<Button>().onClick.AddListener(OnGamePlayClick);
         GameObject.Find("Exit Button").GetComponent<Button>().onClick.AddListener(OnGameExitClick);
-        GameObject.Find("Begin Button").GetComponent<Button>().onClick.AddListener(OnBeginClick);
+        GameObject.Find("Choose Button").GetComponent<Button>().onClick.AddListener(OnChooseClick);
     }
 
     // Update is called once per frame
@@ -46,7 +48,7 @@ public class GameController : MonoBehaviour
     {
         if(showPlayer)
         {
-            showPlayer.transform.Rotate(Vector3.forward, 1, Space.World);
+            RotateObjectToAngle(showPlayer, 1);
         }
     }
 
@@ -108,11 +110,24 @@ public class GameController : MonoBehaviour
         SceneManager.sceneUnloaded -= unloadedEve;
     }
 
+    private bool RotateObjectToAngle(GameObject gameObject, float angle)
+    {
+        if (gameObject != null)
+        {
+            gameObject.transform.Rotate(Vector3.forward, angle, Space.World);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     private void OnGamePlayClick()
     {
-        if (!isLoad)
+        if (!isLoadGallery)
         {
-            isLoad = true;
+            isLoadGallery = true;
             loadGalleryScene();
         }
     }
@@ -122,11 +137,11 @@ public class GameController : MonoBehaviour
         GameExit();
     }
 
-    private void OnBeginClick()
+    private void OnChooseClick()
     {
-        if (isLoad)
+        if (isLoadGallery)
         {
-            isLoad = false;
+            isLoadGallery = false;
             unloadGalleryScene ();
         }
         GamePlay();
@@ -138,8 +153,8 @@ public class GameController : MonoBehaviour
         scoreText.SetActive(true);
         playText.SetActive(false);
         exitText.SetActive(false);
-        beginText.SetActive(false);
-        Instantiate(player, new Vector3(0f, 0f, -4f), Quaternion.identity);
+        chooseText.SetActive(false);
+        firePlayer = Instantiate(player, new Vector3(0f, 0f, -4f), Quaternion.identity);
         StartCoroutine("SpawnWaves");
     }
 
@@ -148,7 +163,7 @@ public class GameController : MonoBehaviour
         scoreText.SetActive(false);
         playText.SetActive(true);
         exitText.SetActive(true);
-        beginText.SetActive(false);
+        chooseText.SetActive(false);
         StopCoroutine("SpawnWaves");
     }
 
@@ -168,7 +183,7 @@ public class GameController : MonoBehaviour
         scoreText.SetActive(false);
         playText.SetActive(false);
         exitText.SetActive(false);
-        beginText.SetActive(true);
+        chooseText.SetActive(true);
         if(showPlayer) {
             Destroy(showPlayer);
         }
@@ -182,6 +197,9 @@ public class GameController : MonoBehaviour
     {
         this.score += score;
         scoreText.GetComponent<TextMeshProUGUI>().text = "Score:" + this.score;
+        // if(this.score % 10 == 0) {
+        //     firePlayer.GetComponent<PlayerController>().Upgrade();
+        // }
     }
 
     private IEnumerator SpawnWaves()
