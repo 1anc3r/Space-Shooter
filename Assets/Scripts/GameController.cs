@@ -185,13 +185,15 @@ public class GameController : MonoBehaviour
         playText.SetActive(false);
         exitText.SetActive(false);
         chooseText.SetActive(true);
+        Quaternion rotation = Quaternion.Euler(-45, 180, 0);
         if(showPlayer) {
+            rotation = showPlayer.transform.rotation;
             Destroy(showPlayer);
         }
-        showPlayer = Instantiate(player, new Vector3(0f, 0f, 0f), Quaternion.Euler(-45, 180, 0));
+        showPlayer = Instantiate(player, new Vector3(0f, 0f, 0f), rotation);
+        showPlayer.transform.localScale = 0.25f * Vector3.one;
         Destroy(showPlayer.GetComponent<PlayerController>());
         Destroy(GameObject.Find("engines_player"));
-        showPlayer.transform.localScale = 0.25f * Vector3.one;
     }
 
     public void AddScore(int score)
