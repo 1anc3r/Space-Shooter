@@ -22,11 +22,9 @@ public class GameController : MonoBehaviour
     
     private RawImage background;
     private GameObject showPlayer;
-    private Texture2D texture;
     private AspectRatioFitter fitter;
     private int score;
     private bool isLoadGallery = false;
-    private readonly float rotateFactory = 100f;
 
     // Use this for initialization
     void Start()
@@ -75,13 +73,13 @@ public class GameController : MonoBehaviour
     }
 
     private void loadGalleryScene () {
-        SceneManager.sceneLoaded += loadedEve;
+        SceneManager.sceneLoaded += loadedSceneEve;
         Resources.UnloadUnusedAssets ();
         StartCoroutine (loadSceneAsync (1, 1));
     }
 
     private void unloadGalleryScene () {
-        SceneManager.sceneUnloaded += unloadedEve;
+        SceneManager.sceneUnloaded += unloadedSceneEve;
         Resources.UnloadUnusedAssets ();
         StartCoroutine (unloadSceneAsync (1));
     }
@@ -100,14 +98,14 @@ public class GameController : MonoBehaviour
         }
     }
 
-    private void loadedEve (Scene scene, LoadSceneMode level) {
+    private void loadedSceneEve (Scene scene, LoadSceneMode level) {
         ShowPlayer();
-        SceneManager.sceneLoaded -= loadedEve;
+        SceneManager.sceneLoaded -= loadedSceneEve;
     }
 
-    private void unloadedEve (Scene scene) {
+    private void unloadedSceneEve (Scene scene) {
         GamePlay();
-        SceneManager.sceneUnloaded -= unloadedEve;
+        SceneManager.sceneUnloaded -= unloadedSceneEve;
     }
 
     private bool RotateObjectToAngle(GameObject gameObject, float angle)
