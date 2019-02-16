@@ -16,9 +16,9 @@ public class GameController : MonoBehaviour
     public GameObject asteroid2;
     public GameObject asteroid3;
     public GameObject scoreText;
-    public GameObject playText;
-    public GameObject exitText;
-    public GameObject chooseText;
+    public GameObject playButton;
+    public GameObject exitButton;
+    public GameObject chooseButton;
     
     private RawImage background;
     private GameObject showPlayer;
@@ -35,9 +35,9 @@ public class GameController : MonoBehaviour
             fitter = GameObject.Find("Background Image").GetComponent<AspectRatioFitter>();
             SetBackgroundByUrl(Path.Combine(Application.streamingAssetsPath, "Background" + (int)UnityEngine.Random.Range(1, 4) + ".jpg"));
         }
-        GameObject.Find("Play Button").GetComponent<Button>().onClick.AddListener(OnGamePlayClick);
-        GameObject.Find("Exit Button").GetComponent<Button>().onClick.AddListener(OnGameExitClick);
-        GameObject.Find("Choose Button").GetComponent<Button>().onClick.AddListener(OnChooseClick);
+        playButton.GetComponent<Button>().onClick.AddListener(OnGamePlayClick);
+        exitButton.GetComponent<Button>().onClick.AddListener(OnGameExitClick);
+        chooseButton.GetComponent<Button>().onClick.AddListener(OnChooseClick);
     }
 
     // Update is called once per frame
@@ -150,9 +150,9 @@ public class GameController : MonoBehaviour
             Destroy(showPlayer);
         }
         scoreText.SetActive(true);
-        playText.SetActive(false);
-        exitText.SetActive(false);
-        chooseText.SetActive(false);
+        playButton.SetActive(false);
+        exitButton.SetActive(false);
+        chooseButton.SetActive(false);
         Instantiate(player, new Vector3(0f, 0f, -4f), Quaternion.identity);
         StartCoroutine("SpawnWaves");
     }
@@ -160,9 +160,9 @@ public class GameController : MonoBehaviour
     public void GameOver()
     {
         scoreText.SetActive(false);
-        playText.SetActive(true);
-        exitText.SetActive(true);
-        chooseText.SetActive(false);
+        playButton.SetActive(true);
+        exitButton.SetActive(true);
+        chooseButton.SetActive(false);
         StopCoroutine("SpawnWaves");
     }
 
@@ -180,9 +180,9 @@ public class GameController : MonoBehaviour
     public void ShowPlayer ()
     {
         scoreText.SetActive(false);
-        playText.SetActive(false);
-        exitText.SetActive(false);
-        chooseText.SetActive(true);
+        playButton.SetActive(false);
+        exitButton.SetActive(false);
+        chooseButton.SetActive(true);
         Quaternion rotation = Quaternion.Euler(-45, 180, 0);
         if(showPlayer) {
             rotation = showPlayer.transform.rotation;
