@@ -25,14 +25,14 @@ public class EnemyController : MonoBehaviour
     {
         if (GameObject.FindWithTag("Player"))
         {
-			transform.LookAt(GameObject.FindWithTag("Player").transform.position);
-			transform.position = Vector3.MoveTowards(transform.position, GameObject.FindWithTag("Player").transform.position, Time.deltaTime * 0.5f);
-        	if (Time.time > fireNext)
-        	{
-        	    fireNext = Time.time + fireInterval;
-       	     	Instantiate(bullet, centerLauncher.position, centerLauncher.rotation);
-            	GetComponent<AudioSource>().Play();
-        	}
+            transform.LookAt(GameObject.FindWithTag("Player").transform.position);
+            transform.position = Vector3.MoveTowards(transform.position, GameObject.FindWithTag("Player").transform.position, Time.deltaTime * 0.5f);
+            if (Time.time > fireNext)
+            {
+                fireNext = Time.time + fireInterval;
+                Instantiate(bullet, centerLauncher.position, centerLauncher.rotation);
+                GetComponent<AudioSource>().Play();
+            }
         }
         if (transform.position.z < -5.5f)
         {
@@ -51,7 +51,7 @@ public class EnemyController : MonoBehaviour
             }
             if (other.tag == "Fire")
             {
-                GameObject.Find("Main Camera").GetComponent<GameController>().AddScore(1);
+                Camera.main.GetComponent<GameController>().AddScore(1);
                 Destroy(other.gameObject);
                 life--;
             }

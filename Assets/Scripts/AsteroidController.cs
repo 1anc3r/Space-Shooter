@@ -38,7 +38,7 @@ public class AsteroidController : MonoBehaviour
             }
             if (other.tag == "Fire")
             {
-                GameObject.Find("Main Camera").GetComponent<GameController>().AddScore(1);
+                Camera.main.GetComponent<GameController>().AddScore(1);
                 Destroy(other.gameObject);
                 life--;
             }

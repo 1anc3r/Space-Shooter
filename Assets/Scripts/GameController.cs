@@ -19,105 +19,25 @@ public class GameController : MonoBehaviour
     public GameObject playButton;
     public GameObject exitButton;
     public GameObject chooseButton;
-    
-    private RawImage background;
+
     private GameObject showPlayer;
-    private AspectRatioFitter fitter;
     private int score;
     private bool isLoadGallery = false;
 
     // Use this for initialization
     void Start()
     {
-        if (GameObject.Find("Background Image"))
-        {
-            background = GameObject.Find("Background Image").GetComponent<RawImage>();
-            fitter = GameObject.Find("Background Image").GetComponent<AspectRatioFitter>();
-            SetBackgroundByUrl(Path.Combine(Application.streamingAssetsPath, "Background" + (int)UnityEngine.Random.Range(1, 4) + ".jpg"));
-        }
         playButton.GetComponent<Button>().onClick.AddListener(OnGamePlayClick);
         exitButton.GetComponent<Button>().onClick.AddListener(OnGameExitClick);
-        chooseButton.GetComponent<Button>().onClick.AddListener(OnChooseClick);
+        chooseButton.GetComponent<Button>().onClick.AddListener(OnPlayerChooseClick);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(showPlayer)
+        if (showPlayer)
         {
             RotateObjectToAngle(showPlayer, 1);
-        }
-    }
-
-    public void SetBackgroundByUrl(string path)
-    {
-        StartCoroutine(SetBackgroundByUrlAsync(path));
-    }
-
-    private IEnumerator SetBackgroundByUrlAsync(string path)
-    {
-        using (UnityWebRequest request = UnityWebRequestTexture.GetTexture(path, true))
-        {
-            yield return request.SendWebRequest();
-            if (request.responseCode == 200)
-            {
-                Texture2D texture = DownloadHandlerTexture.GetContent(request);
-                fitter.aspectRatio = texture.width * 1f / texture.height;
-                background.texture = texture;
-            }
-            else
-            {
-                Debug.Log("Set " + path + " to background failed. Error: " + request.error);
-            }
-        }
-    }
-
-    private void loadGalleryScene () {
-        SceneManager.sceneLoaded += loadedSceneEve;
-        Resources.UnloadUnusedAssets ();
-        StartCoroutine (loadSceneAsync (1, 1));
-    }
-
-    private void unloadGalleryScene () {
-        SceneManager.sceneUnloaded += unloadedSceneEve;
-        Resources.UnloadUnusedAssets ();
-        StartCoroutine (unloadSceneAsync (1));
-    }
-
-    private IEnumerator loadSceneAsync (int sceneIndex, int mode = 0) {
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync (sceneIndex, mode == 0 ? LoadSceneMode.Single : LoadSceneMode.Additive);
-        while (!asyncLoad.isDone) {
-            yield return null;
-        }
-    }
-
-    private IEnumerator unloadSceneAsync (int sceneIndex) {
-        AsyncOperation asyncLoad = SceneManager.UnloadSceneAsync (sceneIndex);
-        while (!asyncLoad.isDone) {
-            yield return null;
-        }
-    }
-
-    private void loadedSceneEve (Scene scene, LoadSceneMode level) {
-        ShowPlayer();
-        SceneManager.sceneLoaded -= loadedSceneEve;
-    }
-
-    private void unloadedSceneEve (Scene scene) {
-        GamePlay();
-        SceneManager.sceneUnloaded -= unloadedSceneEve;
-    }
-
-    private bool RotateObjectToAngle(GameObject gameObject, float angle)
-    {
-        if (gameObject != null)
-        {
-            gameObject.transform.Rotate(Vector3.forward, angle, Space.World);
-            return true;
-        }
-        else
-        {
-            return false;
         }
     }
 
@@ -126,7 +46,23 @@ public class GameController : MonoBehaviour
         if (!isLoadGallery)
         {
             isLoadGallery = true;
-            loadGalleryScene();
+            SceneController.Instance.LoadGalleryScene(() =>
+            {
+                ShowPlayer(player);
+            });
+        }
+    }
+
+    private void OnPlayerChooseClick()
+    {
+        if (isLoadGallery)
+        {
+            isLoadGallery = false;
+            SceneController.Instance.UnloadGalleryScene(() =>
+            {
+                HidePlayer();
+                GamePlay();
+            });
         }
     }
 
@@ -135,20 +71,35 @@ public class GameController : MonoBehaviour
         GameExit();
     }
 
-    private void OnChooseClick()
+    public void ShowPlayer(GameObject player)
     {
-        if (isLoadGallery)
+        this.player = player;
+        scoreText.SetActive(false);
+        playButton.SetActive(false);
+        exitButton.SetActive(false);
+        chooseButton.SetActive(true);
+        Quaternion rotation = Quaternion.Euler(-45, 180, 0);
+        if (showPlayer)
         {
-            isLoadGallery = false;
-            unloadGalleryScene ();
+            rotation = showPlayer.transform.rotation;
+            Destroy(showPlayer);
+        }
+        showPlayer = Instantiate(player, new Vector3(0f, 0f, 0f), rotation);
+        showPlayer.transform.localScale = 0.25f * Vector3.one;
+        Destroy(showPlayer.GetComponent<PlayerController>());
+        Destroy(GameObject.Find("engines_player"));
+    }
+
+    public void HidePlayer()
+    {
+        if (showPlayer)
+        {
+            Destroy(showPlayer);
         }
     }
 
     public void GamePlay()
     {
-        if(showPlayer) {
-            Destroy(showPlayer);
-        }
         scoreText.SetActive(true);
         playButton.SetActive(false);
         exitButton.SetActive(false);
@@ -171,33 +122,23 @@ public class GameController : MonoBehaviour
         Application.Quit();
     }
 
-    public void SetPlayer(GameObject player)
-    {
-        this.player = player;
-        ShowPlayer();
-    }
-
-    public void ShowPlayer ()
-    {
-        scoreText.SetActive(false);
-        playButton.SetActive(false);
-        exitButton.SetActive(false);
-        chooseButton.SetActive(true);
-        Quaternion rotation = Quaternion.Euler(-45, 180, 0);
-        if(showPlayer) {
-            rotation = showPlayer.transform.rotation;
-            Destroy(showPlayer);
-        }
-        showPlayer = Instantiate(player, new Vector3(0f, 0f, 0f), rotation);
-        showPlayer.transform.localScale = 0.25f * Vector3.one;
-        Destroy(showPlayer.GetComponent<PlayerController>());
-        Destroy(GameObject.Find("engines_player"));
-    }
-
     public void AddScore(int score)
     {
         this.score += score;
         scoreText.GetComponent<TextMeshProUGUI>().text = "Score:" + this.score;
+    }
+
+    private bool RotateObjectToAngle(GameObject gameObject, float angle)
+    {
+        if (gameObject != null)
+        {
+            gameObject.transform.Rotate(Vector3.forward, angle, Space.World);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     private IEnumerator SpawnWaves()
@@ -213,7 +154,9 @@ public class GameController : MonoBehaviour
                 {
                     asteroid = enemy;
                     Instantiate(enemy, new Vector3(UnityEngine.Random.Range(-2.3f, 2.3f), 0f, 5.5f), Quaternion.identity);
-                } else {
+                }
+                else
+                {
                     if (range > 0 && range <= 1f)
                     {
                         asteroid = asteroid1;
