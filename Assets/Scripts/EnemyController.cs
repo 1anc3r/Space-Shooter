@@ -2,25 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// 敌人控制器
 public class EnemyController : MonoBehaviour
 {
 
-    public int life = 3;
-    public float speed = -1f;
-    public GameObject expolsion;
-    public GameObject bullet;
-    public Transform centerLauncher;
+    public int life = 3;                // 生命值
+    public float speed = -1f;           // 速度
+    public GameObject expolsion;        // 爆炸特效
+    public GameObject bullet;           // 子弹
+    public Transform centerLauncher;    // 中子弹发射口
 
-    private float fireNext = 0f;
-    private float fireInterval = 1f;
+    private float fireNext = 0f;        // 下次开火
+    private float fireInterval = 1f;    // 开火间隔
 
-    // Use this for initialization
     void Start()
     {
         GetComponent<Rigidbody>().velocity = transform.forward * speed;
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (GameObject.FindWithTag("Player"))

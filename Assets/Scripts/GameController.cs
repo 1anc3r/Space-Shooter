@@ -7,24 +7,24 @@ using UnityEngine.UI;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 
+// 游戏控制器
 public class GameController : MonoBehaviour
 {
 
-    public GameObject player;
-    public GameObject enemy;
-    public GameObject asteroid1;
-    public GameObject asteroid2;
-    public GameObject asteroid3;
-    public GameObject scoreText;
-    public GameObject playButton;
-    public GameObject exitButton;
-    public GameObject chooseButton;
+    public GameObject player;           // 玩家预制体
+    public GameObject enemy;            // 敌人预制体
+    public GameObject asteroid1;        // 小型小行星预制体
+    public GameObject asteroid2;        // 中型小行星预制体
+    public GameObject asteroid3;        // 大型小行星预制体
+    public GameObject scoreText;        // 游戏分数展示
+    public GameObject playButton;       // 开始游戏按钮
+    public GameObject exitButton;       // 结束游戏按钮
+    public GameObject chooseButton;     // 选择飞船按钮
 
-    private GameObject showPlayer;
-    private int score;
-    private bool isLoadGallery = false;
+    private GameObject showPlayer;      // 飞船模型
+    private int score;                  // 游戏分数
+    private bool isLoadGallery = false; // 是否加载场景
 
-    // Use this for initialization
     void Start()
     {
         playButton.GetComponent<Button>().onClick.AddListener(OnGamePlayClick);
@@ -32,7 +32,6 @@ public class GameController : MonoBehaviour
         chooseButton.GetComponent<Button>().onClick.AddListener(OnPlayerChooseClick);
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (showPlayer)
@@ -43,11 +42,13 @@ public class GameController : MonoBehaviour
 
     private void OnGamePlayClick()
     {
+        // 加载飞船展示场景
         if (!isLoadGallery)
         {
             isLoadGallery = true;
             SceneController.Instance.LoadGalleryScene(() =>
             {
+                // 在回调中展示飞船
                 ShowPlayer(player);
             });
         }
@@ -55,11 +56,13 @@ public class GameController : MonoBehaviour
 
     private void OnPlayerChooseClick()
     {
+        // 卸载飞船展示场景
         if (isLoadGallery)
         {
             isLoadGallery = false;
             SceneController.Instance.UnloadGalleryScene(() =>
             {
+                // 在回调中隐藏飞船并开始游戏
                 HidePlayer();
                 GamePlay();
             });
@@ -68,9 +71,10 @@ public class GameController : MonoBehaviour
 
     private void OnGameExitClick()
     {
-        GameExit();
+        Application.Quit();
     }
 
+    // 展示飞船模型
     public void ShowPlayer(GameObject player)
     {
         this.player = player;
@@ -78,18 +82,21 @@ public class GameController : MonoBehaviour
         playButton.SetActive(false);
         exitButton.SetActive(false);
         chooseButton.SetActive(true);
+        // 如果飞船模型不存在， 则以初始旋转角度生成飞船模型，否则继承前一个飞船模型的旋转角度并销毁前一个飞船模型
         Quaternion rotation = Quaternion.Euler(-45, 180, 0);
         if (showPlayer)
         {
             rotation = showPlayer.transform.rotation;
-            Destroy(showPlayer);
+            HidePlayer();
         }
         showPlayer = Instantiate(player, new Vector3(0f, 0f, 0f), rotation);
         showPlayer.transform.localScale = 0.25f * Vector3.one;
+        // 飞船模型不需要控制器和特效
         Destroy(showPlayer.GetComponent<PlayerController>());
         Destroy(GameObject.Find("engines_player"));
     }
 
+    // 隐藏飞船模型
     public void HidePlayer()
     {
         if (showPlayer)
@@ -98,6 +105,7 @@ public class GameController : MonoBehaviour
         }
     }
 
+    // 游戏开始
     public void GamePlay()
     {
         scoreText.SetActive(true);
@@ -108,6 +116,7 @@ public class GameController : MonoBehaviour
         StartCoroutine("SpawnWaves");
     }
 
+    // 游戏结束
     public void GameOver()
     {
         scoreText.SetActive(false);
@@ -117,17 +126,14 @@ public class GameController : MonoBehaviour
         StopCoroutine("SpawnWaves");
     }
 
-    public void GameExit()
-    {
-        Application.Quit();
-    }
-
+    // 得分
     public void AddScore(int score)
     {
         this.score += score;
         scoreText.GetComponent<TextMeshProUGUI>().text = "Score:" + this.score;
     }
 
+    // 以指定角度旋转指定物体
     private bool RotateObjectToAngle(GameObject gameObject, float angle)
     {
         if (gameObject != null)
@@ -141,15 +147,18 @@ public class GameController : MonoBehaviour
         }
     }
 
+    // 生成小行星或敌人波次
     private IEnumerator SpawnWaves()
     {
         yield return new WaitForSeconds(1);
         while (true)
         {
+            // 每波生成10个
             for (int i = 0; i < 10; i++)
             {
                 GameObject asteroid = asteroid1;
                 float range = Mathf.Abs(UnityEngine.Random.Range(0f, 4f));
+                // 掷骰子决定是敌人还是小行星
                 if (range > 3f)
                 {
                     asteroid = enemy;
@@ -157,6 +166,7 @@ public class GameController : MonoBehaviour
                 }
                 else
                 {
+                    // 掷骰子决定小行星大小
                     if (range > 0 && range <= 1f)
                     {
                         asteroid = asteroid1;

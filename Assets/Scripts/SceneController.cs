@@ -8,6 +8,7 @@ using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
+// 场景管理器
 public class SceneController : MonoBehaviour
 {
     static SceneController _instance;

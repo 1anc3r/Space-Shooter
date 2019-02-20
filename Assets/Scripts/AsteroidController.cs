@@ -2,23 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// 小行星控制器
 public class AsteroidController : MonoBehaviour
 {
 
-    public int life = 0;
-    public float speed = -5f;
-    public GameObject expolsion;
+    public int life = 0;            // 生命值
+    public float speed = -5f;       // 速度
+    public GameObject expolsion;    // 爆炸特效
 
-    private float tumble = 5f;
+    private float tumble = 5f;      // 随机旋转
 
-    // Use this for initialization
     void Start()
     {
         GetComponent<Rigidbody>().velocity = transform.forward * speed;
         GetComponent<Rigidbody>().angularVelocity = Random.insideUnitSphere * tumble;
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (transform.position.z < -5.5f)

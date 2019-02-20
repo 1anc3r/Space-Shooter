@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// 爆炸控制器
 public class ExplosionController : MonoBehaviour
 {
 
-    // Use this for initialization
     void Start()
     {
         Destroy(gameObject, 2);
     }
 
-    // Update is called once per frame
     void Update()
     {
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+// 展示厅控制器
 public class GalleryController : MonoBehaviour
 {
 

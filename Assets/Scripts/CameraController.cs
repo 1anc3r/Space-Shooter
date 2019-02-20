@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 
+// 摄像机控制器
 public class CameraController : MonoBehaviour
 {
     private AspectRatioFitter fitter;
@@ -22,11 +23,17 @@ public class CameraController : MonoBehaviour
         }
     }
 
+    // 设置背景
     public void SetBackgroundByUrl(string path)
     {
+        if (Application.platform != RuntimePlatform.Android)
+        {
+            path = "file://" + path;
+        }
         StartCoroutine(SetBackgroundByUrlAsync(path));
     }
 
+    // 设置背景异步实现
     private IEnumerator SetBackgroundByUrlAsync(string path)
     {
         using (UnityWebRequest request = UnityWebRequestTexture.GetTexture(path, true))
@@ -45,6 +52,7 @@ public class CameraController : MonoBehaviour
         }
     }
 
+    // 摄像机x轴震动
     public void ShakeX()
     {
         Shake(
@@ -57,6 +65,7 @@ public class CameraController : MonoBehaviour
         );
     }
 
+    // 摄像机y轴震动
     public void ShakeY()
     {
         Shake(
@@ -76,6 +85,7 @@ public class CameraController : MonoBehaviour
         Random
     };
 
+    // 震动
     public void Shake(
         float magnitude,
         float speed,
@@ -89,14 +99,15 @@ public class CameraController : MonoBehaviour
         StartCoroutine(ShakeRoutine(magnitude, speed, duration, OnGetOriginal, OnShake, OnComplete, shakeType));
     }
 
+    // 震动异步实现
     public static IEnumerator ShakeRoutine(
-        float magnitude, // 震动幅度
-        float speed, // 震动速度
-        float duration, // 震动时间
-        Func<float> OnGetOriginal, // 获取固定点坐标
-        Action<float> OnShake, // 获取震动数值
-        Action OnComplete = null, // 完成回调
-        ShakeType shakeType = ShakeType.Smooth // 震动类型
+        float magnitude,                        // 震动幅度
+        float speed,                            // 震动速度
+        float duration,                         // 震动时间
+        Func<float> OnGetOriginal,              // 获取固定点坐标
+        Action<float> OnShake,                  // 获取震动数值
+        Action OnComplete = null,               // 完成回调
+        ShakeType shakeType = ShakeType.Smooth  // 震动类型
     )
     {
         // 震动耗时
@@ -105,17 +116,14 @@ public class CameraController : MonoBehaviour
         float random = UnityEngine.Random.Range(-1.5f, 1.5f);
         // 获得固定点
         float original = OnGetOriginal();
-
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
             float percent = elapsed / duration;
             // 当前波动
             float rps = random + percent * speed;
-
             // 波动映射到[-1, 1]
             float range;
-
             switch (shakeType)
             {
                 case ShakeType.Smooth:
@@ -131,7 +139,6 @@ public class CameraController : MonoBehaviour
                     range = 0.0f;
                     break;
             }
-
             // 震动总时间的50%后开始衰减
             if (percent < 0.5f)
             {
@@ -142,10 +149,8 @@ public class CameraController : MonoBehaviour
                 // 计算衰减
                 OnShake(range * magnitude * (2.0f * (1.0f - percent)) + original);
             }
-
             yield return null;
         }
-
         if (OnComplete != null)
         {
             // 完成回调
