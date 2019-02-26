@@ -74,7 +74,7 @@ public class PlayerController : MonoBehaviour
     // 移动
     private void Move()
     {
-#if UNITY_EDITOR || UNITY_STANDALONE
+#if UNITY_EDITOR || UNITY_STANDALONE || UNITY_WEBGL
         moveHorizontal = Input.GetAxis("Horizontal");
         moveVertical = Input.GetAxis("Vertical");
         moveVector = new Vector3(moveHorizontal, 0f, moveVertical);
