@@ -1,4 +1,4 @@
-# Space-Shooter（打飞机）MiniGame by Unity3D
+# Space-Shooter（皇牌空战）MiniGame by Unity3D
 
 ## 技术点:
 
