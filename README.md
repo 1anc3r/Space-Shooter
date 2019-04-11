@@ -1,4 +1,4 @@
-# Space-Shooter（傲气雄鹰）MiniGame by Unity3D
+# Space-Shooter（太空大战）MiniGame by Unity3D
 
 ## 技术点:
 
